@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hospital Patient Management System — Dashboard</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <!-- Mobile Sidebar Backdrop -->
+    <div id="sidebarBackdrop" class="sidebar-backdrop"></div>
+
+    <div class="app-shell">
+        <!-- ==================== SIDEBAR NAVIGATION ==================== -->
+        <aside id="sidebar" class="sidebar">
+            <div class="sidebar-header">
+                <div class="brand-logo" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2v20M2 12h20" />
+                    </svg>
+                </div>
+                <div class="brand-info">
+                    <span class="brand-name">CarePulse HPM</span>
+                    <span class="brand-tag">Hospital Triage &amp; Queue</span>
+                </div>
+                <button id="closeSidebarBtn" class="mobile-close-btn" aria-label="Close Menu">&times;</button>
+            </div>
+
+            <nav class="sidebar-nav" aria-label="Primary Navigation">
+                <div class="nav-heading">NAVIGATION</div>
+
+                <button class="nav-btn active" data-view="dashboard">
+                    <span class="nav-icon nav-icon-blue">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+                            <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+                            <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
+                            <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
+                        </svg>
+                    </span>
+                    <span class="nav-text">Dashboard</span>
+                </button>
+
+                <button class="nav-btn" data-view="register">
+                    <span class="nav-icon nav-icon-purple">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="8.5" cy="7" r="4"></circle>
+                            <line x1="20" y1="8" x2="20" y2="14"></line>
+                            <line x1="23" y1="11" x2="17" y2="11"></line>
+                        </svg>
+                    </span>
+                    <span class="nav-text">Register Patient</span>
+                </button>
+
+                <button class="nav-btn" data-view="patients">
+                    <span class="nav-icon nav-icon-teal">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                    </span>
+                    <span class="nav-text">Search &amp; Manage</span>
+                    <span id="navTotalCount" class="nav-pill">0</span>
+                </button>
+
+                <button class="nav-btn" data-view="queues">
+                    <span class="nav-icon nav-icon-rose">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                        </svg>
+                    </span>
+                    <span class="nav-text">Waiting Queues</span>
+                    <span id="navWaitingCount" class="nav-pill pill-amber">0</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="mode-card">
+                    <div class="mode-header">
+                        <span id="modeDot" class="status-dot online"></span>
+                        <span id="modeLabel" class="mode-title">Standalone Browser Mode</span>
+                    </div>
+                    <p id="modeDescription" class="mode-desc">
+                        Works directly by double-clicking index.html. Records are saved in browser storage.
+                    </p>
+                    <button id="resetSampleDataBtn" class="btn-reset-demo" type="button">
+                        Reset Demo Patients
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ==================== MAIN CONTENT ==================== -->
+        <div class="main-container">
+            <!-- Top Bar -->
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button id="openSidebarBtn" class="hamburger-btn" aria-label="Open Menu">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <line x1="3" y1="12" x2="21" y2="12"></line>
+                            <line x1="3" y1="18" x2="21" y2="18"></line>
+                        </svg>
+                    </button>
+                    <div>
+                        <h1 class="page-title">Hospital Patient Management System</h1>
+                        <p class="page-subtitle">Emergency Priority Queue (1–5) &amp; Regular FIFO Queue Dashboard</p>
+                    </div>
+                </div>
+
+                <div class="topbar-actions">
+                    <button id="topAttendNextBtn" class="btn btn-emerald" type="button">
+                        <svg class="btn-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                        <span>Attend Next Patient</span>
+                    </button>
+                    <button id="topNewPatientBtn" class="btn btn-indigo" type="button">
+                        <svg class="btn-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        <span>Register Patient</span>
+                    </button>
+                </div>
+            </header>
+
+            <main class="content-body">
+                <!-- ==================== VIEW 1: DASHBOARD ==================== -->
+                <section id="view-dashboard" class="view-panel active">
+                    <!-- Colorful Summary Cards -->
+                    <div class="summary-grid">
+                        <div class="summary-card card-gradient-blue">
+                            <div class="summary-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="9" cy="7" r="4"></circle>
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                </svg>
+                            </div>
+                            <div class="summary-details">
+                                <span class="summary-label">Total Patients</span>
+                                <h2 id="cardTotalPatients" class="summary-number">0</h2>
+                                <span class="summary-sub">All registered hospital records</span>
+                            </div>
+                        </div>
+
+                        <div class="summary-card card-gradient-amber">
+                            <div class="summary-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polyline points="12 6 12 12 16 14"></polyline>
+                                </svg>
+                            </div>
+                            <div class="summary-details">
+                                <span class="summary-label">Waiting Queue</span>
+                                <h2 id="cardWaitingPatients" class="summary-number">0</h2>
+                                <span id="cardWaitingSub" class="summary-sub">0 emergency • 0 normal</span>
+                            </div>
+                        </div>
+
+                        <div class="summary-card card-gradient-rose">
+                            <div class="summary-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                                </svg>
+                            </div>
+                            <div class="summary-details">
+                                <span class="summary-label">Emergency Priority</span>
+                                <h2 id="cardEmergencyPatients" class="summary-number">0</h2>
+                                <span id="cardEmergencySub" class="summary-sub">High-priority triage queue</span>
+                            </div>
+                        </div>
+
+                        <div class="summary-card card-gradient-emerald">
+                            <div class="summary-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                </svg>
+                            </div>
+                            <div class="summary-details">
+                                <span class="summary-label">Attended Patients</span>
+                                <h2 id="cardAttendedPatients" class="summary-number">0</h2>
+                                <span class="summary-sub">Consultations completed</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Next Patient Spotlight Banner -->
+                    <div class="spotlight-banner">
+                        <div class="spotlight-left">
+                            <span class="spotlight-tag">NEXT IN TRIAGE</span>
+                            <div id="nextPatientDisplay" class="spotlight-info">
+                                No patients currently waiting in queue.
+                            </div>
+                        </div>
+                        <div class="spotlight-actions">
+                            <button id="dashAttendBtn" class="btn btn-emerald" type="button">
+                                Attend Next Patient
+                            </button>
+                            <button class="btn btn-outline-light" type="button" data-goto="queues">
+                                View Full Queues
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Dashboard Two-Column Overview -->
+                    <div class="dashboard-columns">
+                        <!-- Live Waiting Queues Snapshot -->
+                        <div class="panel-card">
+                            <div class="panel-header">
+                                <div>
+                                    <h3 class="panel-title">Live Triage Queues Overview</h3>
+                                    <p class="panel-subtitle">Emergency (Priority 5→1) is attended before Normal (FIFO)</p>
+                                </div>
+                                <button class="btn btn-sm btn-ghost" type="button" data-goto="queues">Open Queues &rarr;</button>
+                            </div>
+
+                            <div class="mini-queue-boxes">
+                                <div class="mini-queue-box mini-emergency">
+                                    <div class="mini-queue-top">
+                                        <span class="mini-queue-title">Emergency Priority Queue</span>
+                                        <span id="dashEmergencyBadge" class="badge badge-emergency">0 Waiting</span>
+                                    </div>
+                                    <ul id="dashEmergencyList" class="mini-queue-list"></ul>
+                                </div>
+
+                                <div class="mini-queue-box mini-regular">
+                                    <div class="mini-queue-top">
+                                        <span class="mini-queue-title">Normal Queue (FIFO)</span>
+                                        <span id="dashRegularBadge" class="badge badge-regular">0 Waiting</span>
+                                    </div>
+                                    <ul id="dashRegularList" class="mini-queue-list"></ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recent Patients Table -->
+                        <div class="panel-card">
+                            <div class="panel-header">
+                                <div>
+                                    <h3 class="panel-title">Recently Registered Patients</h3>
+                                    <p class="panel-subtitle">Latest patient admissions and current status</p>
+                                </div>
+                                <button class="btn btn-sm btn-ghost" type="button" data-goto="patients">Manage All &rarr;</button>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Patient</th>
+                                            <th>Condition</th>
+                                            <th>Type / Priority</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="recentPatientsTableBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==================== VIEW 2: REGISTER PATIENT ==================== -->
+                <section id="view-register" class="view-panel">
+                    <div class="panel-card form-card">
+                        <div class="panel-header">
+                            <div>
+                                <h2 class="panel-title">Register New Patient</h2>
+                                <p class="panel-subtitle">Add a patient to the Emergency Priority Queue or Normal FIFO Queue</p>
+                            </div>
+                        </div>
+
+                        <form id="registerForm" novalidate>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="regId">Patient ID <span class="req">*</span></label>
+                                    <input type="number" id="regId" min="1" placeholder="e.g. 105" required />
+                                    <small class="field-hint">Unique positive integer ID</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="regName">Full Name <span class="req">*</span></label>
+                                    <input type="text" id="regName" placeholder="e.g. Ananya Rao" required />
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="regAge">Age (Years) <span class="req">*</span></label>
+                                    <input type="number" id="regAge" min="1" max="130" placeholder="e.g. 32" required />
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="regGender">Gender <span class="req">*</span></label>
+                                    <select id="regGender" required>
+                                        <option value="">Select Gender...</option>
+                                        <option value="Female">Female</option>
+                                        <option value="Male">Male</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group full-width">
+                                    <label for="regCondition">Medical Condition / Symptoms <span class="req">*</span></label>
+                                    <input type="text" id="regCondition" placeholder="e.g. Acute Chest Pain, High Fever, Routine Checkup..." required />
+                                </div>
+
+                                <div class="form-group full-width">
+                                    <label>Queue Classification <span class="req">*</span></label>
+                                    <div class="type-selector">
+                                        <label class="type-option selected" id="optRegularCard">
+                                            <input type="radio" name="regType" value="regular" checked />
+                                            <div class="type-option-body">
+                                                <span class="type-title">Normal Queue (Regular)</span>
+                                                <span class="type-desc">Standard consultation — attended in First-In, First-Out (FIFO) order</span>
+                                            </div>
+                                        </label>
+
+                                        <label class="type-option" id="optEmergencyCard">
+                                            <input type="radio" name="regType" value="emergency" />
+                                            <div class="type-option-body">
+                                                <span class="type-title">Emergency Priority Queue</span>
+                                                <span class="type-desc">Critical care — attended before regular patients by Priority 5 (Highest) to 1</span>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div id="regPriorityWrapper" class="form-group full-width priority-box hidden">
+                                    <label for="regPriority">Emergency Priority Level (1 = Low, 5 = Highest) <span class="req">*</span></label>
+                                    <select id="regPriority">
+                                        <option value="5">Priority 5 — Critical / Life-Threatening (Highest)</option>
+                                        <option value="4">Priority 4 — Severe Emergency</option>
+                                        <option value="3" selected>Priority 3 — Urgent Medical Need</option>
+                                        <option value="2">Priority 2 — Moderate Emergency</option>
+                                        <option value="1">Priority 1 — Low Emergency (Lowest)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="button" id="clearRegisterBtn" class="btn btn-ghost">Clear Form</button>
+                                <button type="submit" class="btn btn-indigo">Register Patient</button>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+
+                <!-- ==================== VIEW 3: SEARCH, EDIT & DELETE PATIENTS ==================== -->
+                <section id="view-patients" class="view-panel">
+                    <div class="panel-card">
+                        <div class="panel-header">
+                            <div>
+                                <h2 class="panel-title">Search, Edit &amp; Delete Patient Records</h2>
+                                <p class="panel-subtitle">Search by Patient ID, Name, or Condition and manage records</p>
+                            </div>
+                            <button class="btn btn-indigo" type="button" data-goto="register">+ Add New Patient</button>
+                        </div>
+
+                        <!-- Search & Filter Bar -->
+                        <div class="filter-bar">
+                            <div class="search-box">
+                                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                </svg>
+                                <input type="text" id="searchQuery" placeholder="Search by Patient ID, Name, or Medical Condition..." />
+                            </div>
+
+                            <select id="filterType" class="filter-select" aria-label="Filter by Type">
+                                <option value="all">All Types (Emergency &amp; Normal)</option>
+                                <option value="emergency">Emergency Only</option>
+                                <option value="regular">Normal (Regular) Only</option>
+                            </select>
+
+                            <select id="filterStatus" class="filter-select" aria-label="Filter by Status">
+                                <option value="all">All Statuses (Waiting &amp; Attended)</option>
+                                <option value="waiting">Waiting Only</option>
+                                <option value="attended">Attended Only</option>
+                            </select>
+
+                            <button id="resetSearchBtn" class="btn btn-ghost" type="button">Reset</button>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Patient ID</th>
+                                        <th>Full Name</th>
+                                        <th>Age / Gender</th>
+                                        <th>Medical Condition</th>
+                                        <th>Queue Type</th>
+                                        <th>Priority</th>
+                                        <th>Status</th>
+                                        <th class="text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="allPatientsTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==================== VIEW 4: WAITING QUEUES ==================== -->
+                <section id="view-queues" class="view-panel">
+                    <div class="queue-banner">
+                        <div>
+                            <h2 class="queue-banner-title">Active Hospital Waiting Queues</h2>
+                            <p id="queueBannerNextText" class="queue-banner-sub">
+                                Checking next patient to attend...
+                            </p>
+                        </div>
+                        <button id="queueAttendNextBtn" class="btn btn-emerald btn-lg" type="button">
+                            Attend Next Patient Now
+                        </button>
+                    </div>
+
+                    <div class="queues-grid">
+                        <!-- Emergency Priority Queue -->
+                        <div class="panel-card queue-card-emergency">
+                            <div class="panel-header">
+                                <div>
+                                    <span class="queue-type-pill pill-danger">PRIORITY QUEUE (5 &rarr; 1)</span>
+                                    <h3 class="panel-title">Emergency Waiting Queue</h3>
+                                    <p class="panel-subtitle">Sorted by highest priority (5 down to 1); ties broken by registration order</p>
+                                </div>
+                                <span id="emergencyCountBadge" class="badge badge-emergency">0 Waiting</span>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Order</th>
+                                            <th>ID</th>
+                                            <th>Patient Name</th>
+                                            <th>Condition</th>
+                                            <th>Priority</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="emergencyQueueTableBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Normal FIFO Queue -->
+                        <div class="panel-card queue-card-regular">
+                            <div class="panel-header">
+                                <div>
+                                    <span class="queue-type-pill pill-teal">NORMAL QUEUE (FIFO)</span>
+                                    <h3 class="panel-title">Normal Waiting Queue</h3>
+                                    <p class="panel-subtitle">Attended in First-In, First-Out registration order after emergencies</p>
+                                </div>
+                                <span id="regularCountBadge" class="badge badge-regular">0 Waiting</span>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Order</th>
+                                            <th>ID</th>
+                                            <th>Patient Name</th>
+                                            <th>Condition</th>
+                                            <th>Queue Type</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="regularQueueTableBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- ==================== EDIT PATIENT MODAL ==================== -->
+    <div id="editModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="editModalTitle">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 id="editModalTitle">Edit Patient Details</h3>
+                <button id="closeEditModalBtn" class="modal-close-btn" aria-label="Close">&times;</button>
+            </div>
+            <form id="editForm" novalidate>
+                <div class="modal-body">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="editId">Patient ID (Read-Only)</label>
+                            <input type="number" id="editId" readonly class="input-readonly" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="editName">Full Name <span class="req">*</span></label>
+                            <input type="text" id="editName" required />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="editAge">Age <span class="req">*</span></label>
+                            <input type="number" id="editAge" min="1" max="130" required />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="editGender">Gender <span class="req">*</span></label>
+                            <select id="editGender" required>
+                                <option value="Female">Female</option>
+                                <option value="Male">Male</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="editCondition">Medical Condition <span class="req">*</span></label>
+                            <input type="text" id="editCondition" required />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="editEmergency">Queue Type</label>
+                            <select id="editEmergency">
+                                <option value="false">Normal (Regular FIFO)</option>
+                                <option value="true">Emergency Priority</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="editWaiting">Attendance Status</label>
+                            <select id="editWaiting">
+                                <option value="true">Waiting in Queue</option>
+                                <option value="false">Attended</option>
+                            </select>
+                        </div>
+
+                        <div id="editPriorityGroup" class="form-group full-width priority-box hidden">
+                            <label for="editPriority">Emergency Priority Level (1–5)</label>
+                            <select id="editPriority">
+                                <option value="5">Priority 5 — Critical (Highest)</option>
+                                <option value="4">Priority 4 — Severe</option>
+                                <option value="3">Priority 3 — Urgent</option>
+                                <option value="2">Priority 2 — Moderate</option>
+                                <option value="1">Priority 1 — Low</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="cancelEditBtn" class="btn btn-ghost">Cancel</button>
+                    <button type="submit" class="btn btn-indigo">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==================== DELETE CONFIRMATION MODAL ==================== -->
+    <div id="deleteModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
+        <div class="modal-box modal-sm">
+            <div class="modal-header">
+                <h3 id="deleteModalTitle">Confirm Delete Patient</h3>
+                <button id="closeDeleteModalBtn" class="modal-close-btn" aria-label="Close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="deleteModalText" class="delete-warning-text">
+                    Are you sure you want to delete this patient record?
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="cancelDeleteBtn" class="btn btn-ghost">Cancel</button>
+                <button type="button" id="confirmDeleteBtn" class="btn btn-danger">Delete Record</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
